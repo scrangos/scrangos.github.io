@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A web-based save file viewer for Rabbit & Steel">
+    <title>R&S Savefile Viewer</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="icon" type="image/x-icon" href="favicon.png">
+
+    <!-- - - - LIBRARIES  - - - - - - -->
+
+    <!-- - - - MAIN STYLESHEETS - - - -->
+    <link rel="stylesheet" type="text/css" href="styles.css">
+
+    <!-- - - - MAIN SCRIPTS - - - - - -->
+    <script defer type="text/javascript" src="main.js"></script>
+    <script defer type="text/javascript" src="collections.js"></script>
+</head>
+<body>
+    <label>Upload your save here:</label>
+    <input type="file" id="save-upload" onchange="handleUpload()"></input><br>
+    <div id="upload-error" class="error-message">Please upload a valid save file (<code>savedata.ini</code>)</div>
+    <span>You can find it at <code>C:\Users\USERNAME\AppData\Local\RabbitSteel\SaveFile\savedata.ini</code></span>
+    <span id="theme">
+        <label>Theme: </label>
+        <select id="theme-select" onchange="handleThemeChange()">
+            <option onclick="handleThemeChange()" value="light">Moonlit</option>
+            <option onclick="handleThemeChange()" value="dark">Spellbound</option>
+            <option onclick="handleThemeChange()" value="random">Random!</option>
+            <option style="display:none">Custom</option>
+            <option value="main color">&nbsp&nbspMain color</option>
+            <option value="bg color">&nbsp&nbspBG color</option>
+        </select>
+    </span>
+
+    <div id="tabs">
+        <button class="tab-button active" id="tab-but-0" onclick="changeTab(0)">Summary</button>
+        <button class="tab-button" id="tab-but-1" onclick="changeTab(1)">Rabbits</button>
+        <button class="tab-button" id="tab-but-2" onclick="changeTab(2)">Win/Loss</button>
+        <button class="tab-button" id="tab-but-3" onclick="changeTab(3)">Items & Abilities</button>
+        <button class="tab-button" id="tab-but-4" onclick="changeTab(4)">Raw View</button>
+    </div>
+    <div id="tab-content">
+        <div class="tab active" id="tab-0">
+            <div id="summary-content">
+                <div class="title">Summary</div>
+                <div class="grid grid-1 slim">
+                        <label>Total Playtime: </label>
+                        <span id="playtime"></span>
+                        <label>Kingdom Boss Clears: </label>
+                        <span id="kingdom-bosses"></span>
+                        <label>Extra Boss Clears: </label>
+                        <span id="extra-bosses"></span>
+                </div>
+                <br>
+                <div class="grid grid-3">
+                    <div class="grid-top"></div>
+                    <div class="grid-top">Total</div>
+                    <div class="grid-top">Solo</div>
+                    <div class="grid-top">Online</div>
+                    <div class="grid-left">Attempts</div>
+                    <div id="attempts-0">-</div>
+                    <div id="attempts-1">-</div>
+                    <div id="attempts-2">-</div>
+                    <div class="grid-left">Wins</div>
+                    <div id="wins-0">-</div>
+                    <div id="wins-1">-</div>
+                    <div id="wins-2">-</div>
+                    <div class="grid-left divider">Win Rate</div>
+                    <div id="winloss-0">-</div>
+                    <div id="winloss-1">-</div>
+                    <div id="winloss-2">-</div>
+
+                    <div class="grid-left">Shop Visits</div>
+                    <div id="shops-0">-</div>
+                    <div id="shops-1">-</div>
+                    <div id="shops-2">-</div>
+                    <div class="grid-left divider">Avg. Shops per Attempt</div>
+                    <div id="shopratio-0">-</div>
+                    <div id="shopratio-1">-</div>
+                    <div id="shopratio-2">-</div>
+
+                    <div class="grid-left divider">Fastest Wins</div>
+                    <div id="fastest0-0" class="rabbit-result">-</div>
+                    <div id="fastest0-1" class="rabbit-result">-</div>
+                    <div id="fastest0-2" class="rabbit-result">-</div>
+
+                    <div class="grid-left">Most Victorious Rabbits</div>
+                    <div id="winnest0-0" class="rabbit-result">-</div>
+                    <div id="winnest0-1" class="rabbit-result">-</div>
+                    <div id="winnest0-2" class="rabbit-result">-</div>
+                </div>
+                <br>
+                <div class="grid-4 grid">
+                    <div class="grid-top"></div>
+                    <div class="grid-top">Cute</div>
+                    <div class="grid-top">Normal</div>
+                    <div class="grid-top">Hard</div>
+                    <div class="grid-top">Lunar</div>
+                    <div class="grid-left">Kingdom Attempts</div>
+                    <div id="kingdomattempts-0">-</div>
+                    <div id="kingdomattempts-1">-</div>
+                    <div id="kingdomattempts-2">-</div>
+                    <div id="kingdomattempts-3">-</div>
+                    <div class="grid-left">Kingdom Wins</div>
+                    <div id="kingdomwins-0">-</div>
+                    <div id="kingdomwins-1">-</div>
+                    <div id="kingdomwins-2">-</div>
+                    <div id="kingdomwins-3">-</div>
+                    <div class="grid-left divider">Kingdom Win Percentage</div>
+                    <div id="kingdomratio-0">-</div>
+                    <div id="kingdomratio-1">-</div>
+                    <div id="kingdomratio-2">-</div>
+                    <div id="kingdomratio-3">-</div>
+                    <div class="grid-left">Extra Attempts</div>
+                    <div id="extraattempts-0">-</div>
+                    <div id="extraattempts-1">-</div>
+                    <div id="extraattempts-2">-</div>
+                    <div id="extraattempts-3">-</div>
+                    <div class="grid-left">Extra Wins</div>
+                    <div id="extrawins-0">-</div>
+                    <div id="extrawins-1">-</div>
+                    <div id="extrawins-2">-</div>
+                    <div id="extrawins-3">-</div>
+                    <div class="grid-left divider">Extra Win Percentage</div>
+                    <div id="extraratio-0">-</div>
+                    <div id="extraratio-1">-</div>
+                    <div id="extraratio-2">-</div>
+                    <div id="extraratio-3">-</div>
+                    <div class="grid-left">True Random Wins</div>
+                    <div id="truerand-0">-</div>
+                    <div id="truerand-1">-</div>
+                    <div id="truerand-2">-</div>
+                    <div id="truerand-3">-</div>
+                    <div class="grid-left">Chaotic Random Wins</div>
+                    <div id="chaosrand-0">-</div>
+                    <div id="chaosrand-1">-</div>
+                    <div id="chaosrand-2">-</div>
+                    <div id="chaosrand-3">-</div>
+                </div>
+                <div class="centered"><small><i>True Random and Chaotic Random runs will cause some of these values to misbehave</i></small></div>
+                <br>
+                <div class="title">Item Progress</div>
+                <div class="grid-1 slim">
+                    <div>Items Seen: </div>
+                    <div id="items-0">-</div>
+                    <div>Items Picked Up: </div>
+                    <div id="items-1">-</div>
+                    <div>Items Cleared Cute With: </div>
+                    <div id="items-2">-</div>
+                    <div>Items Cleared Normal With: </div>
+                    <div id="items-3">-</div>
+                    <div>Items Cleared Hard With: </div>
+                    <div id="items-4">-</div>
+                    <div>Items Cleared Lunar With: </div>
+                    <div id="items-5">-</div>
+                    <div>Items Cleared Any Diff With: </div>
+                    <div id="items-6">-</div>
+                </div>
+                <br>
+                <div class="title">Gem Progress</div>
+                <div class="grid-1 slim">
+                    <div>Gems Seen: </div>
+                    <div id="gems-0">-</div>
+                    <div>Gems Purchased: </div>
+                    <div id="gems-1">-</div>
+                    <div>Abilities Cleared Cute With:</div>
+                    <div id="gems-2">-</div>
+                    <div>Abilities Cleared Normal With:</div>
+                    <div id="gems-3">-</div>
+                    <div>Abilities Cleared Hard With:</div>
+                    <div id="gems-4">-</div>
+                    <div>Abilities Cleared Lunar With:</div>
+                    <div id="gems-5">-</div>
+                    <div>Abilities Cleared Any Diff With:</div>
+                    <div id="gems-6">-</div>
+                </div>
+                <div id="lev-unlock" class="inactive slim">
+                    <br>
+                    <div class="title">Levitation Rings Progress</div>
+                    <div class="subtitle">True & Chaotic Random Clears</div>
+                    <div class="grid-3 grid" id="lev-grid">
+                        <div class="grid-top">Class</div>
+                        <div class="grid-top">Normal</div>
+                        <div class="grid-top">Hard</div>
+                        <div class="grid-top">Lunar</div>
+                    </div>
+                    <br>
+                    <div class="subtitle">Magicklock Clears</div>
+                    <div class="centered" id="lev-locks"></div>
+                </div>
+            </div>
+        </div>
+        <div class="tab" id="tab-1">
+            <div id="rabbits-content">
+                <div id="rabbits-top">
+                    <svg id="rabbits-graph" width="200" height="200"></svg>
+                    <div id="rabbits-table">
+                        <div id="rabbits-table-title" class="subtitle">Rabbits Leaderboard</div>
+                        <div id="rabbits-table-subtitle" class="centered"></div>
+                        <br>
+                        <div id="rabbits-table-content"></div>
+                    </div>
+                    <div id="rabbits-selectors">
+                        <div>
+                            <label for="rabbits-category-selector">Category: </label>
+                            <select onchange="handleRabbitSelector()" id="rabbits-category-selector">
+                                <option selected>Clear Count</option>
+                                <option>Fastest Run</option>
+                            </select>
+                        </div>
+                        <div>
+                        <label for="rabbits-diff-selector">Difficulty: </label>
+                            <select onchange="handleRabbitSelector()" id="rabbits-diff-selector">
+                                <option>Cute</option>
+                                <option>Normal</option>
+                                <option>Hard</option>
+                                <option>Lunar</option>
+                                <option selected>All Difficulties</option>
+                            </select>
+                        </div>
+                        <div>
+                        <label for="rabbits-type-selector">Lobby: </label>
+                            <select onchange="handleRabbitSelector()" id="rabbits-type-selector">
+                                <option selected>Combined</option>
+                                <option>Offline</option>
+                                <option>Online</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div id="rabbits-list"></div>
+            </div>
+        </div>
+        <div class="tab" id="tab-2">
+            <div id="diffs-content">
+                <div class="title">Win/Loss</div>
+                <div id="wl-grid" class="grid-5 grid"></div>
+            </div>
+        </div>
+        <div class="tab" id="tab-3">
+            <div id="items-content">
+                <div class="title">Items & Abilities</div>
+                <div class="grid-7 grid divider" id="item-grid">
+                    <div class="grid-top">
+                        <span id="sort-items-1" onclick="generateItems(1)" class="default-sort sortbox active sortable">⭯</span>
+                        <span onclick="generateItems(2)" class="sortable">Item
+                            <span class="sortbox" id="sort-items-2"></span>
+                        </span>
+                    </div>
+                    <div onclick="generateItems(3)" class="grid-top sortable">Seen
+                        <span class="sortbox" id="sort-items-3"></span>
+                    </div>
+                    <div onclick="generateItems(4)" class="grid-top sortable">Held
+                        <span class="sortbox" id="sort-items-4"></span>
+                    </div>
+                    <div onclick="generateItems(5)" class="grid-top sortable">Cute<br>Win
+                        <span class="sortbox" id="sort-items-5"></span>
+                    </div>
+                    <div onclick="generateItems(6)" class="grid-top sortable">Normal<br>Win
+                        <span class="sortbox" id="sort-items-6"></span>
+                    </div>
+                    <div onclick="generateItems(7)" class="grid-top sortable">Hard<br>Win
+                        <span class="sortbox" id="sort-items-7"></span>
+                    </div>
+                    <div onclick="generateItems(8)" class="grid-top sortable">Lunar<br>Win
+                        <span class="sortbox" id="sort-items-8"></span>
+                    </div>
+                    <div onclick="generateItems(9)" class="grid-top sortable">Any<br>Win
+                        <span class="sortbox" id="sort-items-9"></span>
+                    </div>
+                </div>
+                <div class="title">Gems</div>
+                <div class="grid-7 grid" id="gems-grid">
+                    <div class="grid-top">
+                        <span onclick="generateGems(1)" class="sortable">Ability
+                            <span class="sortbox active" id="sort-gems-1"></span>
+                        </span>
+                    </div>
+                    <div onclick="generateGems(3)" class="grid-top sortable">Seen
+                        <span class="sortbox" id="sort-gems-3"></span>
+                    </div>
+                    <div onclick="generateGems(4)" class="grid-top sortable">Held
+                        <span class="sortbox" id="sort-gems-4"></span>
+                    </div>
+                    <div onclick="generateGems(5)" class="grid-top sortable">Cute<br>Win
+                        <span class="sortbox" id="sort-gems-5"></span>
+                    </div>
+                    <div onclick="generateGems(6)" class="grid-top sortable">Normal<br>Win
+                        <span class="sortbox" id="sort-gems-6"></span>
+                    </div>
+                    <div onclick="generateGems(7)" class="grid-top sortable">Hard<br>Win
+                        <span class="sortbox" id="sort-gems-7"></span>
+                    </div>
+                    <div onclick="generateGems(8)" class="grid-top sortable">Lunar<br>Win
+                        <span class="sortbox" id="sort-gems-8"></span>
+                    </div>
+                    <div onclick="generateGems(9)" class="grid-top sortable">Any<br>Win
+                        <span class="sortbox" id="sort-gems-9"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="tab" id="tab-4">
+            <div id="raw-content"></div>
+        </div>
+    </div>
+    <div class="centered">
+        <small>This application is <a href="https://github.com/GaviGuy/RnS-Save-Stats">open source</a>. Your information isn't uploaded anywhere.</small>
+    </div>
+</body>
